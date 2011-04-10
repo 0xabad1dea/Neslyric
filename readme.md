@@ -2,7 +2,7 @@
 % by 0xabad1dea
 % April 9, 2011
 
-![](neslyric.png "Neslyric Unofficial Mascots Miku and Teto")
+![](https://github.com/0xabad1dea/Neslyric/blob/master/neslyric.png?raw=true "Neslyric Unofficial Mascots Miku and Teto")
 
 About
 ========
@@ -17,8 +17,8 @@ Event Structure
 
 Neslyric is driven by a simple bytecode describing the screen. Each event struct is 24 bytes, allowing exactly 256 of them (Neslyrics' limit) to fit in one bank.
 
-~~~~
-CoolEvent:
+
+	CoolEvent:
 
 	.TimeInSeconds		.db 0 ; 0-255, start of event in integer seconds
 	.TimeInSixtieths	.db 0 ; 0-59, fractions of a second from the int
@@ -77,9 +77,6 @@ CoolEvent:
 	
 	
 	
-
-
-~~~~
 
 
 
