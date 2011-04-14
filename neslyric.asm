@@ -122,9 +122,16 @@ IRQ_Routine:		; sprite 0 interrupt will go here
 
 	lda #$2A ; color bias
 	sta $2001
+	;lda #$20
+	;sta $2006
 	lda #0
 	sta $2005
 	sta $2005
+
+	lda #$23
+	sta $2006
+    lda #$00
+    sta $2006
 	sta $e000
 	sta $e001
 

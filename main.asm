@@ -94,8 +94,9 @@ LogoLoop:
     cpy	#8
     bne LogoLoop
 ; laaaaaaaaazyyy
+	clc ; EVERY DANG TIME, CLC GETS ME
 	ldy #0
-	lda #127
+	lda #128
 LogoLoop2:
     ldx #$22
     stx $2006
@@ -119,6 +120,7 @@ LogoLoop2:
 	sta $2006
 	lda #$20
 	sta $2006
+	clc
 	ldx #0
 LoadTempText:
 	lda TemporaryText,x
@@ -179,6 +181,30 @@ LoadTempText:
 
 	
 ;;;; we have switched from mmc1 to mmc3 :>
+
+;;; it helps to init the mmc
+	lda #0
+	sta $8000
+	lda #1
+	sta $8001
+	lda #1
+	sta $8000
+	lda #2
+	sta $8001
+	lda #2
+	sta $8000
+	sta $8001
+	lda #3
+	sta $8000
+	sta $8001
+		lda #4
+	sta $8000
+	sta $8001
+		lda #5
+	sta $8000
+	sta $8001
+	
+
 ; here is some IRQ magic
 
 	lda #$40
