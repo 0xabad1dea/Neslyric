@@ -37,6 +37,8 @@ Reset_Routine:
     lda #0
     sta Timer
     sta SecondsTimer
+    sta XScroll
+    sta YScroll
   
     lda #$3F ; palette stuffing
     sta $2006
@@ -60,21 +62,84 @@ Reset_Routine:
 
     ldy #4
     ldx #0 
-    lda #0
+    lda #$c1 ; fill
 .loop:          ; counting to 1024 (256x4)
     sta $2007
     inx
     bne .loop
     dey
     bne .loop
-    
-    ldx #0
-.DoClearNSF:
 
-    sta $0000,x
-    sta $0200,x
+DoMainLogo:
+    lda #$0
+    ldy #0
+    clc    
+
+LogoLoop:
+    ldx #$21
+    stx $2006
+    ldx TitleOffsetTable,y
+    stx $2006 
+    ldx #$00    
+    ldx #0
+.LoadLogo1:
+    sta $2007
     inx
-    cpx #202
+    adc #1
+	;clc
+    cpx #16
+    bne .LoadLogo1
+    iny
+
+    cpy	#8
+    bne LogoLoop
+; laaaaaaaaazyyy
+	ldy #0
+	lda #127
+LogoLoop2:
+    ldx #$22
+    stx $2006
+    ldx TitleOffsetTable,y
+    stx $2006 
+    ldx #$00    
+    ldx #0
+.LoadLogo1:
+    sta $2007
+    inx
+    adc #1
+    ;clc
+    cpx #16
+    bne .LoadLogo1
+    iny
+
+    cpy	#8
+    bne LogoLoop2
+    
+    lda #$23
+	sta $2006
+	lda #$20
+	sta $2006
+	ldx #0
+LoadTempText:
+	lda TemporaryText,x
+	sta $2007
+	inx
+	cpx #32
+	bne LoadTempText
+
+    
+    
+	lda #0 ; whoops this is kind of important, no wonder i was getting sprite
+		   ; corruption with a letter q flying around...
+
+    
+.DoClearNSF:
+; and other stuff. 
+    sta $0000,x	; zp - used by ppmck and our variables
+    sta $0200,x ; used by ppmck
+    sta $0300,x ; sprite page
+    inx
+    cpx #255
     bne .DoClearNSF    
     
     ; this code came from nullsleep	
@@ -111,50 +176,76 @@ Reset_Routine:
     sta $2005
     sta $2005	
 
+
+	
+;;;; we have switched from mmc1 to mmc3 :>
+; here is some IRQ magic
+
+	lda #$40
+	sta $4017
+	cli
+
+; bg colors
+    lda #$23
+    sta $2006
+    lda #$C0
+    sta $2006
+    ldx #0
+    lda #%00000000
+.LoadColors: ; 
+
+    sta $2007
+    inx
+    cpx #64
+    bne .LoadColors
+    
+
+    
+;;;; set up sprite zero for rescroll trigger
+	ldx #0
+.ZeroSprite:
+    lda SpritePages,x
+    sta $0300,x
+    inx
+    cpx #$4
+    bne .ZeroSprite
+	
 ; derp I can't believe I forgot this
 
 	lda #%10001000 
 	sta $2000
 	lda #$1A ; no bias
 	sta $2001
+
 	
-;;;; setting up mmc1
-
-;;;; control
-    lda #%00011110
-    sta $8000
-    lsr a
-    sta $8000
-    lsr a
-    sta $8000
-    lsr a
-    sta $8000
-    lsr a
-    sta $8000
-    
-;;;; setting sprite bank to frame1
-    lda #0
-    sta $c000
-    lsr a
-    sta $c000
-    lsr a
-    sta $c000
-    lsr a
-    sta $c000
-    lsr a
-    sta $c000	
+	;; enable mmc3 interrupts
+	lda #1
+	;sta $E000
+	lda #120
+	sta $C000
+	sta $C001
+	lda #1
+	sta $e000
+	sta $E001
+looploop:
+	  
+;	lda $2002
+;	and #%01000000
+;	cmp #%01000000
+;	beq ScrollNowNowNow
+	jmp looploop
 	
-
-ResetExtended: 
-
-.looploop:
-	jmp .looploop
 
 
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;    
 ResumeInit:    
+
+TitleOffsetTable:
+    .db $08,$28,$48,$68,$88,$a8,$c8,$e8
+TemporaryText:
+	.db " This Is Neslyric Version 0.0.1 "
     
 
 

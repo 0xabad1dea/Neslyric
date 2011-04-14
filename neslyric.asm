@@ -14,9 +14,9 @@
 
 ; INES header
     .inesprg    2   ; don't touch unless you're taking off every zig
-    .ineschr    1   ; The number of 8KB CHR files
+    .ineschr    2   ; The number of 8KB CHR files
     .inesmir    0   ; Yeah don't touch this.
-    .inesmap    1   ; mmc1, do not touch
+    .inesmap    4   ; mmc3, do not touch
     
     
 ;------------------------------------------------;
@@ -41,6 +41,9 @@
 	.bank 4
 	.org $0000
     .incbin "res/miku-teto.chr" ; 0, 1
+    .bank 5
+    .org $0000
+    .incbin "res/font.chr" ; 2, 3
 	
 
 ;;;; ---------- Reset Bank (final prg bank), runs first
@@ -67,18 +70,15 @@
     .org $e000
     
 
-
-
-   ; .include "nmi.asm"
-PostNMI:
- .org  $FFD0
  NMI_Routine:
+
+    .include "nmi.asm"
+
+ .org  $FFA0
 NMIResume:
-;========== this chunk needs to be .orged at $FFD0 in every high bank
-; no scroll
-    lda #0
-    sta $2005
-    sta $2005
+
+;========== this chunk needs to be .orged at $FFA0 in every high bank
+
 Music:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  ;   lda Timer
@@ -86,14 +86,48 @@ Music:
  ;   cmp #1
  ;   bne NMIEnd
 
-	jsr	$8084 ;sound_driver_start     
+
 
 NMIEnd:
+
+;;;;
+	; temporary, until loading scroll values from events
+	; get this - I had this earlier in NMI and it didn't work (the ld/in/st) - 
+	; what the heck, Nintendo? Why do you do this to me?
+	ldx XScroll
+	inx
+	stx XScroll
+	ldx YScroll
+	inx
+	stx YScroll
+
+; scrolling
+    lda XScroll
+    sta $2005
+    lda #0
+    sta $2005
+
+	jsr	$8084 ;sound_driver_start     
 
 	rti
 	
   	
 IRQ_Routine:		; sprite 0 interrupt will go here
+
+
+	lda #%00000000
+	sta $8000
+	lda #5 ; alphabet
+	sta $8001
+
+	lda #$2A ; color bias
+	sta $2001
+	lda #0
+	sta $2005
+	sta $2005
+	sta $e000
+	sta $e001
+
 	rti
 	
 	
@@ -110,6 +144,8 @@ IRQ_Routine:		; sprite 0 interrupt will go here
 Timer       	.rs 1   ; fractions of a second (every NMI)
 SecondsTimer    .rs 1   ; increments when Timer hits 60   
 Tmp				.rs 1	; what it says on the tin
+XScroll			.rs 1	; ''
+YScroll			.rs 1	; ''
 
 
 

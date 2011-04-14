@@ -1,6 +1,6 @@
-% Neslyric 8-bit Animation Kit
-% by 0xabad1dea
-% April 9, 2011
+Neslyric 8-bit Animation Kit
+=============================
+
 
 ![](https://github.com/0xabad1dea/Neslyric/blob/master/neslyric.png?raw=true "Neslyric Unofficial Mascots Miku and Teto")
 
@@ -15,7 +15,7 @@ Neslyric is mostly written by Melissa Elliott ie 0xabad1dea, with support of the
 Event Structure
 ===============
 
-Neslyric is driven by a simple bytecode describing the screen. Each event struct is 24 bytes, allowing exactly 256 of them (Neslyrics' limit) to fit in one bank.
+Neslyric is driven by a simple bytecode describing the screen. Each event struct is 24 bytes, allowing  256 of them (Neslyrics' limit) to fit in one bank. 
 
 
 	CoolEvent:
