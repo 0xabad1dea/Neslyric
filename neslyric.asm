@@ -13,8 +13,8 @@
 
 
 ; INES header
-    .inesprg    2   ; don't touch unless you're taking off every zig
-    .ineschr    2   ; The number of 8KB CHR files
+    .inesprg    4   ; don't touch unless you're taking off every zig
+    .ineschr    2   ; The number of 8KB CHR files, DO touch5
     .inesmir    0   ; Yeah don't touch this.
     .inesmap    4   ; mmc3, do not touch
     
@@ -35,38 +35,52 @@
     .org	$8000
     .incbin "res/popipo.nsf"  
     
+    .bank 4 ; ugly hack for powerpak
+    .org $8000
+    .incbin "res/popipo.nsf"
+    .bank 1 ; ugly hack for powerpak
+    .org $a000
+    .include "data.asm"
+    .bank 2 ; ugly hack for powerpak
+    .org $8000
+    .incbin "res/silence.nsf"
+    .bank 3 ; ugly hack for powerpak
+    .org $8000
+    .incbin "res/silence.nsf"
+    
+    
 ;;;; ---------- graphics banks
 ; the first graphics bank starts numerically after the last prg bank
 
-	.bank 4
+	.bank 8
 	.org $0000
     .incbin "res/miku-teto.chr" ; 0, 1
-    .bank 5
+    .bank 9
     .org $0000
     .incbin "res/font.chr" ; 2, 3
 	
 
 ;;;; ---------- Reset Bank (final prg bank), runs first
-	.bank 3
+	.bank 7
 	.org $f000
     .include "main.asm"
     
     
 ;;;; ---------- data bank
 
-    .bank 1
-    .org $A000
-    .include "data.asm"
+    .bank 5
+    .org $8000
+    .incbin "res/silence.nsf"
    
     
 ;;;; ---------- event bank
-    .bank 2
+    .bank 6
     .org $c000
     .include "events.asm" 
 
 
 ;;;; ---------- nmi, a part of this balanced breakfast
-    .bank 3
+    .bank 7
     .org $e000
     
 

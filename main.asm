@@ -25,6 +25,9 @@ Reset_Routine:
 
 	lda	$2002
 	bpl	.WaitV
+.WaitV2:	
+	lda	$2002
+	bpl	.WaitV2
 	ldx	#$00    ; kill graphics
 	stx	$2000
 	stx	$2001
@@ -32,7 +35,48 @@ Reset_Routine:
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; we have switched from mmc1 to mmc3 :>
 
+;;; it helps to init the mmc
+	lda #0
+	sta $8000
+	lda #1
+	sta $8001
+	lda #1
+	sta $8000
+	lda #2
+	sta $8001
+		lda #2
+	sta $8000
+	lda #4
+	sta $8001
+		lda #3
+	sta $8000
+	lda #5
+	sta $8001
+		lda #4
+	sta $8000
+	lda #6
+	sta $8001
+		lda #5
+	sta $8000
+	lda #7
+	sta $8001
+	
+	
+	lda #6
+	sta $8000
+	lda #0
+	sta $8001
+	lda #7
+	sta $8000
+	lda #1
+	sta $8001
+
+	lda #1
+	sta $a000
+	lda #0
+	sta $a001
 
     lda #0
     sta Timer
@@ -134,6 +178,10 @@ LoadTempText:
 	lda #0 ; whoops this is kind of important, no wonder i was getting sprite
 		   ; corruption with a letter q flying around...
 
+
+
+
+
     
 .DoClearNSF:
 ; and other stuff. 
@@ -141,7 +189,7 @@ LoadTempText:
     sta $0200,x ; used by ppmck
     sta $0300,x ; sprite page
     inx
-    cpx #255
+    ;cpx #255
     bne .DoClearNSF    
     
     ; this code came from nullsleep	
@@ -180,36 +228,7 @@ LoadTempText:
 
 
 	
-;;;; we have switched from mmc1 to mmc3 :>
 
-;;; it helps to init the mmc
-	lda #0
-	sta $8000
-	lda #1
-	sta $8001
-	lda #1
-	sta $8000
-	lda #2
-	sta $8001
-	lda #2
-	sta $8000
-	sta $8001
-	lda #3
-	sta $8000
-	sta $8001
-		lda #4
-	sta $8000
-	sta $8001
-		lda #5
-	sta $8000
-	sta $8001
-	
-
-; here is some IRQ magic
-
-	lda #$40
-	sta $4017
-	cli
 
 ; bg colors
     lda #$23
@@ -253,6 +272,13 @@ LoadTempText:
 	lda #1
 	sta $e000
 	sta $E001
+	
+	
+; here is some IRQ magic
+
+	lda #$40
+	sta $4017
+	cli
 looploop:
 	  
 ;	lda $2002
